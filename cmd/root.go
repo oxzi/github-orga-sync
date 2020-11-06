@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
+var logDebug bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -31,10 +34,10 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig, initLogging)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile,
-		"config", ".github-orga-sync.toml", "config file")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", ".github-orga-sync.toml", "config file")
+	rootCmd.PersistentFlags().BoolVarP(&logDebug, "verbose", "v", false, "more verbosity, debug logging")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -44,6 +47,13 @@ func initConfig() {
 	}
 
 	viper.AutomaticEnv()
+}
+
+// initLogging configures the logging level.
+func initLogging() {
+	if logDebug {
+		log.SetLevel(log.DebugLevel)
+	}
 }
 
 // parseConfig or exit trying.

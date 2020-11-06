@@ -61,7 +61,7 @@ func FetchGitHubRepos(orga, ref, token string) (repos []Repo, err error) {
 				SshUrl: r.SshUrl,
 			}
 			if r.Ref.Name != "" {
-				repo.Ref = map[string]string{
+				repo.Rev = map[string]string{
 					r.Ref.Name: r.Ref.Target.Oid,
 				}
 			}
