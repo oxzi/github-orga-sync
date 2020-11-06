@@ -58,8 +58,6 @@ func (repo Repo) clone() error {
 
 // pull this Repo.
 func (repo Repo) pull(branch string) (updated bool, err error) {
-	log.WithField("repository", repo).Debug("Pulling repository")
-
 	gitCmd, gitCmdErr := exec.LookPath("git")
 	if gitCmdErr != nil {
 		err = gitCmdErr
@@ -101,6 +99,58 @@ func (repo Repo) pull(branch string) (updated bool, err error) {
 	if pullOutput, pullErr := pullCmd.CombinedOutput(); pullErr != nil {
 		log.WithField("repository", repo).WithError(pullErr).Errorf("Pulling failed\n%s", pullOutput)
 		err = pullErr
+		return
+	}
+
+	updated = true
+	return
+}
+
+// Push a branch back to GitHub.
+func (repo Repo) Push(branch string) (updated bool, err error) {
+	if stat, statErr := os.Stat(repo.Name); os.IsNotExist(statErr) {
+		log.WithField("repository", repo).Warn("Remote repository does not exist")
+		return
+	} else if statErr != nil {
+		err = statErr
+		return
+	} else if !stat.IsDir() {
+		err = fmt.Errorf("%s is not a directory", repo.Name)
+		return
+	}
+
+	gitCmd, gitCmdErr := exec.LookPath("git")
+	if gitCmdErr != nil {
+		err = gitCmdErr
+		return
+	}
+
+	revParseCmd := exec.Command(gitCmd, "-C", repo.Name, "rev-parse", branch)
+	localRevOutput, revParseErr := revParseCmd.CombinedOutput()
+	if revParseErr != nil {
+		log.WithField("repository", repo).WithError(revParseErr).Error("git rev-parse failed")
+		err = revParseErr
+		return
+	}
+	localRev := strings.TrimSpace(string(localRevOutput))
+	log.WithFields(log.Fields{
+		"repository": repo,
+		"branch":     branch,
+		"local-rev":  localRev,
+	}).Debug("Fetched local rev")
+
+	remoteRev, isRemoteRev := repo.Rev[branch]
+	if !isRemoteRev {
+		log.WithField("repository", "repo").Warn("Misses remote branch revision")
+	} else if localRev == remoteRev {
+		log.WithField("repository", "repo").Debug("No new commits, skipping")
+		return
+	}
+
+	pushCmd := exec.Command(gitCmd, "-C", repo.Name, "push", "-q", "origin", branch)
+	if pushOutput, pushErr := pushCmd.CombinedOutput(); pushErr != nil {
+		log.WithField("repository", repo).WithError(pushErr).Errorf("Pushing failed\n%s", pushOutput)
+		err = pushErr
 		return
 	}
 
