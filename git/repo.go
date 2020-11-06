@@ -125,11 +125,13 @@ func (repo Repo) Push(branch string) (updated bool, err error) {
 		return
 	}
 
-	revParseCmd := exec.Command(gitCmd, "-C", repo.Name, "rev-parse", branch)
+	revParseCmd := exec.Command(gitCmd, "-C", repo.Name, "rev-parse", "--verify", branch)
 	localRevOutput, revParseErr := revParseCmd.CombinedOutput()
 	if revParseErr != nil {
-		log.WithField("repository", repo).WithError(revParseErr).Error("git rev-parse failed")
-		err = revParseErr
+		log.WithFields(log.Fields{
+			"repository": repo,
+			"branch":     branch,
+		}).Warn("Local repository does not contain branch")
 		return
 	}
 	localRev := strings.TrimSpace(string(localRevOutput))
