@@ -1,0 +1,15 @@
+[github]
+# Name of your GitHub organization.
+orga = "your-github-orga"
+
+# A personal API access token.
+# Needs at least `repo` and `admin:repo_hook read:repo_hook` permissions.
+#
+# https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token
+token = "github-api-token"
+
+[branch]
+# Branch to pull.
+pull = "master"
+# Branch to push.
+push = "feedback"
