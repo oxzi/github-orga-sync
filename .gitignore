@@ -1,2 +1,10 @@
+# SPDX-FileCopyrightText: 2020 Alvar Penning
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Output
 github-orga-sync
+
+# Example and configuration file
+test
 .github-orga-sync.toml

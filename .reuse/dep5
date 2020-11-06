@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: github-orga-sync
+Upstream-Contact: Alvar Penning <post@0x21.biz>
+Source: https://github.com/oxzi/github-orga-sync/
+
+Files: go.mod go.sum
+Copyright: 2020 Alvar Penning <post@0x21.biz>
+License: CC0-1.0
+Comment: Awaiting Go module support, https://github.com/fsfe/reuse-tool/pull/234
