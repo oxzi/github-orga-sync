@@ -54,6 +54,10 @@ func initLogging() {
 	if logDebug {
 		log.SetLevel(log.DebugLevel)
 	}
+
+	log.SetFormatter(&log.TextFormatter{
+		DisableTimestamp: true,
+	})
 }
 
 // parseConfig or exit trying.
